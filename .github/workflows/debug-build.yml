@@ -24,6 +24,22 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Generate debug keystore
+        run: |
+          mkdir -p keystore
+          keytool -genkeypair -v \
+            -keystore keystore/yuyan-release.jks \
+            -storepass android -keypass android \
+            -alias yuyan \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Debug, OU=Debug, O=Debug, L=Debug, ST=Debug, C=CN"
+          cat > keystore/keystore.properties <<EOF
+          storeFile=keystore/yuyan-release.jks
+          storePassword=android
+          keyAlias=yuyan
+          keyPassword=android
+          EOF
+
       - name: Build debug APK
         run: ./gradlew :app:assembleOfflineDebug --no-daemon
 
